@@ -1,8 +1,11 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
         testApplicationId "com.commonsware.cwac.richedit.test"
@@ -22,6 +25,7 @@ android {
 
 dependencies {
     androidTestCompile 'com.android.support.test:rules:0.3'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 if (project.hasProperty('PUBLISH_GROUP_ID')) {
@@ -51,4 +55,7 @@ if (project.hasProperty('PUBLISH_GROUP_ID')) {
             repository(url: LOCAL_REPO)
         }
     }
+}
+repositories {
+    mavenCentral()
 }

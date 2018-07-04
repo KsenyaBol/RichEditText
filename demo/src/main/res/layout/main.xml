@@ -1,7 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.commonsware.cwac.richedit.RichEditText xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/editor"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:gravity="left|top"
-	android:imeOptions="flagNoExtractUi"/>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/stylingControlsContainer">
+        <com.commonsware.cwac.richedit.RichEditText
+            android:id="@+id/editor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:imeOptions="flagNoExtractUi" />
+    </ScrollView>
+
+    <RelativeLayout
+        android:id="@+id/stylingControlsContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorVeryLightGray">
+
+        <LinearLayout
+            android:id="@+id/stylingButtonsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/actionStyleBold"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bold" />
+
+            <Button
+                android:id="@+id/actionStyleItalic"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/italicize" />
+
+            <Button
+                android:id="@+id/actionStyleUnderline"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/underline" />
+
+            <ImageButton
+                android:id="@+id/actionInLineAttachment"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_icon_image_grey" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignBottom="@id/stylingButtonsContainer"
+            android:background="@color/colorLightGray" />
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,6 +1,6 @@
 /***
   Copyright (c) 2011-2014 CommonsWare, LLC
-  
+
   Licensed under the Apache License, Version 2.0 (the "License"); you may
   not use this file except in compliance with the License. You may obtain
   a copy of the License at
@@ -28,8 +28,12 @@ import android.text.style.UnderlineSpan;
 import android.util.AttributeSet;
 import android.view.ActionMode;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.widget.EditText;
 import com.commonsware.cwac.richtextutils.Selection;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,15 +45,15 @@ import java.util.List;
  * (http://github.com/commonsguy/cwac-richedit). Concepts in
  * this editor were inspired by:
  * http://code.google.com/p/droid-writer
- * 
+ *
  */
 public class RichEditText extends EditText implements
-    EditorActionModeListener {
-  public static final Effect<Boolean> BOLD=
+    EditorActionModeListener, EditorTypingListener {
+  public static final TypingEffect<Boolean> BOLD=
       new StyleEffect(Typeface.BOLD);
-  public static final Effect<Boolean> ITALIC=
+  public static final TypingEffect<Boolean> ITALIC=
       new StyleEffect(Typeface.ITALIC);
-  public static final Effect<Boolean> UNDERLINE=new UnderlineEffect();
+  public static final TypingEffect<Boolean> UNDERLINE=new UnderlineEffect();
   public static final Effect<Boolean> STRIKETHROUGH=
       new StrikethroughEffect();
   public static final Effect<Layout.Alignment> LINE_ALIGNMENT=
@@ -76,6 +80,8 @@ public class RichEditText extends EditText implements
   private boolean keyboardShortcuts=true;
   private ColorPicker colorPicker=null;
   private ActionMode actionMode=null;
+  private static final ArrayList<TypingEffect<?>> CURRENT_TYPING_EFFECT =
+      new ArrayList<>();
 
   /*
    * EFFECTS is a roster of all defined effects, for simpler
@@ -103,7 +109,17 @@ public class RichEditText extends EditText implements
     EFFECTS.add(URL);
     EFFECTS.add(BACKGROUND);
     EFFECTS.add(FOREGROUND);
+
+    /*
+     * Typing Boolean effects
+     */
+    CURRENT_TYPING_EFFECT.add(BOLD);
+    CURRENT_TYPING_EFFECT.add(ITALIC);
+    CURRENT_TYPING_EFFECT.add(UNDERLINE);
+
   }
+
+  private TypingStyleTextWatcher typingStyleTextWatcher;
 
   /*
    * Standard one-parameter widget constructor, simply
@@ -111,6 +127,7 @@ public class RichEditText extends EditText implements
    */
   public RichEditText(Context context) {
     super(context);
+    init();
   }
 
   /*
@@ -119,6 +136,7 @@ public class RichEditText extends EditText implements
    */
   public RichEditText(Context context, AttributeSet attrs) {
     super(context, attrs);
+    init();
   }
 
   /*
@@ -127,6 +145,12 @@ public class RichEditText extends EditText implements
    */
   public RichEditText(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
+    init();
+  }
+
+  private void init(){
+    typingStyleTextWatcher = new TypingStyleTextWatcher(this);
+    this.addTextChangedListener(typingStyleTextWatcher);
   }
 
   /*
@@ -134,20 +158,26 @@ public class RichEditText extends EditText implements
    * checks to see if there are any effects applied to the
    * current selection, and supplies that information to the
    * registrant.
-   * 
+   *
    * Uses isSelectionChanging to avoid updating anything
    * while this callback is in progress (e.g., registrant
    * updates a ToggleButton, causing its
    * OnCheckedChangeListener to fire, causing it to try to
    * update the RichEditText as if the user had clicked upon
    * it.
-   * 
+   *
    * @see android.widget.TextView#onSelectionChanged(int,
    * int)
    */
   @Override
   public void onSelectionChanged(int start, int end) {
     super.onSelectionChanged(start, end);
+
+    if (typingStyleTextWatcher != null && !typingStyleTextWatcher.getTextModified()) {
+      for (TypingEffect<?> effect : CURRENT_TYPING_EFFECT) {
+          effect.setUsingStyle(effect.existsInSelection(this));
+      }
+    }
 
     if (selectionListener != null) {
       ArrayList<Effect<?>> effects=new ArrayList<Effect<?>>();
@@ -177,6 +207,12 @@ public class RichEditText extends EditText implements
       actionMode=null;
       actionModeIsShowing=false;
     }
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent event) {
+    typingStyleTextWatcher.setTextModified(false);
+    return super.onTouchEvent(event);
   }
 
   @Override
@@ -283,6 +319,9 @@ public class RichEditText extends EditText implements
   public void toggleEffect(Effect<Boolean> effect) {
     if (!isSelectionChanging) {
       effect.applyToSelection(this, !effect.valueInSelection(this));
+      if (effect instanceof TypingEffect) {
+        ((TypingEffect) effect).toggleUsingStyle(this);
+      }
     }
   }
 
@@ -482,6 +521,22 @@ public class RichEditText extends EditText implements
   public void disableActionModes() {
     setCustomSelectionActionModeCallback(null);
     mainMode=null;
+  }
+
+  // Adds an effect for the user input
+  @Override
+  public void addTypingEffect(@NotNull TypingEffect<Object> typingEffect) {
+    CURRENT_TYPING_EFFECT.add(typingEffect);
+  }
+
+  // Removes the typing effect for the user input
+  @Override
+  public void removeTypingEffect(@NotNull TypingEffect<Object> typingEffect) {
+    CURRENT_TYPING_EFFECT.remove(typingEffect);
+  }
+
+  public List<TypingEffect<?>> getCurrentTypingEffects() {
+    return CURRENT_TYPING_EFFECT;
   }
 
   /*

@@ -5,5 +5,8 @@
 	<string name="app_name">RichEditText Demo</string>
 	<string name="app_name2">RichEditText ActionMode</string>
 	<string name="testdata">Improved coverage of <tt>AlarmManager</tt> and <a href='https://github.com/commonsguy/cwac-wakeful'><tt>WakefulIntentService</tt></a></string>
-
+	<string name="bold">Bold</string>
+	<string name="italicize">Italicize</string>
+	<string name="underline">Underline</string>
+	<string name="photo">Photo</string>
 </resources>
