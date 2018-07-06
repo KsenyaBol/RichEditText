@@ -539,6 +539,15 @@ public class RichEditText extends EditText implements
     return CURRENT_TYPING_EFFECT;
   }
 
+  public boolean isEffectActive(TypingEffect<?> typingEffect) {
+    for (TypingEffect<?> effect: CURRENT_TYPING_EFFECT) {
+      if (effect.equals(typingEffect)) {
+        return effect.getUsingStyle();
+      }
+    }
+    return false;
+  }
+
   /*
    * Interface for listener object to be registered by
    * setOnSelectionChangedListener().

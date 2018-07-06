@@ -18,17 +18,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Selection;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.WindowManager;
+import android.view.*;
 import android.widget.Button;
 
 import com.commonsware.cwac.colormixer.ColorMixerActivity;
-import com.commonsware.cwac.richedit.ColorPicker;
-import com.commonsware.cwac.richedit.ColorPickerOperation;
-import com.commonsware.cwac.richedit.RichEditText;
-import com.commonsware.cwac.richedit.URLEffect;
+import com.commonsware.cwac.richedit.*;
+
+import java.util.List;
 
 public class RichTextEditorDemoActivity extends Activity
         implements ColorPicker {
@@ -50,27 +46,46 @@ public class RichTextEditorDemoActivity extends Activity
         actionStyleItalic = findViewById(R.id.actionStyleItalic);
         actionStyleUnderline = findViewById(R.id.actionStyleUnderline);
         editor.setColorPicker(this);
-        editor.enableActionModes(true);
         setupViews();
     }
 
     private void setupViews(){
-        actionStyleBold.setOnClickListener(new View.OnClickListener() {
+        actionStyleBold.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                editor.toggleEffect(RichEditText.BOLD);
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    editor.toggleEffect(RichEditText.BOLD);
+                    view.setPressed(editor.isEffectActive(RichEditText.BOLD));
+                }
+                return true;
             }
         });
-        actionStyleItalic.setOnClickListener(new View.OnClickListener() {
+        actionStyleItalic.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                editor.toggleEffect(RichEditText.ITALIC);
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    editor.toggleEffect(RichEditText.ITALIC);
+                    view.setPressed(editor.isEffectActive(RichEditText.ITALIC));
+                }
+                return true;
             }
         });
-        actionStyleUnderline.setOnClickListener(new View.OnClickListener() {
+        actionStyleUnderline.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                editor.toggleEffect(RichEditText.UNDERLINE);
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    editor.toggleEffect(RichEditText.UNDERLINE);
+                    view.setPressed(editor.isEffectActive(RichEditText.UNDERLINE));
+                }
+                return true;
+            }
+        });
+        editor.setOnSelectionChangedListener(new RichEditText.OnSelectionChangedListener() {
+            @Override
+            public void onSelectionChanged(int start, int end, List<Effect<?>> effects) {
+                actionStyleBold.setPressed(editor.isEffectActive(RichEditText.BOLD));
+                actionStyleItalic.setPressed(editor.isEffectActive(RichEditText.ITALIC));
+                actionStyleUnderline.setPressed(editor.isEffectActive(RichEditText.UNDERLINE));
             }
         });
     }
