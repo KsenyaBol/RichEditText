@@ -17,8 +17,9 @@ package com.commonsware.cwac.richedit;
 import android.text.Spannable;
 import android.util.Log;
 import com.commonsware.cwac.richtextutils.Selection;
+import org.jetbrains.annotations.NotNull;
 
-public class SimpleBooleanEffect<T> extends Effect<Boolean> {
+public class SimpleBooleanEffect<T> extends TypingEffect<Boolean> {
   private Class<T> clazz;
 
   SimpleBooleanEffect(Class<T> clazz) {
@@ -55,28 +56,35 @@ public class SimpleBooleanEffect<T> extends Effect<Boolean> {
 
   @Override
   public void applyToSelection(RichEditText editor, Boolean add) {
-    applyToSpannable(editor.getText(), new Selection(editor), add);
+    applyToSpannable(editor.getText(), new Selection(editor), add, false);
   }
 
-  void applyToSpannable(Spannable str, Selection selection, Boolean add) {
+  @Override
+  public void applyToSpannable(@NotNull Spannable str,@NotNull Selection selection, boolean add, boolean addingChar) {
     T[] spans=str.getSpans(selection.getStart(), selection.getEnd(), clazz);
     int prologueStart=Integer.MAX_VALUE;
     int epilogueEnd=-1;
 
-    for (T span : spans) {
-      int spanStart=str.getSpanStart(span);
+    if (selection.getEnd() == selection.getStart()) {
+      return;
+    }
 
-      if (spanStart < selection.getStart()) {
-        prologueStart=Math.min(prologueStart, spanStart);
+    if (!addingChar) {
+      for(T span : spans) {
+        int spanStart = str.getSpanStart(span);
+
+        if(spanStart < selection.getStart()) {
+          prologueStart = Math.min(prologueStart, spanStart);
+        }
+
+        int spanEnd = str.getSpanEnd(span);
+
+        if(spanEnd > selection.getEnd()) {
+          epilogueEnd = Math.max(epilogueEnd, spanEnd);
+        }
+
+        str.removeSpan(span);
       }
-
-      int spanEnd=str.getSpanEnd(span);
-
-      if (spanEnd > selection.getEnd()) {
-        epilogueEnd=Math.max(epilogueEnd, spanEnd);
-      }
-
-      str.removeSpan(span);
     }
 
     try {
