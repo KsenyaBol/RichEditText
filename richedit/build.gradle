@@ -1,15 +1,23 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'kotlin-android-extensions'
+}
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdk 33
 
     defaultConfig {
         testApplicationId "com.commonsware.cwac.richedit.test"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
 
     sourceSets {
@@ -17,45 +25,19 @@ android {
             assets.srcDirs = ['../testAssets']
         }
     }
-
     packagingOptions {
-        exclude 'LICENSE.txt' // required for no good reason...
+        resources {
+            excludes += ['LICENSE.txt']
+        }
     }
+
+    namespace 'com.commonsware.cwac.richedit'
 }
 
 dependencies {
-    androidTestCompile 'com.android.support.test:rules:0.3'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
 }
 
-if (project.hasProperty('PUBLISH_GROUP_ID')) {
-    // based on http://stackoverflow.com/a/23672732/115145
-
-    android.libraryVariants.all { variant ->
-        task("generate${variant.name.capitalize()}Javadoc", type: Javadoc) {
-            description "Generates Javadoc for $variant.name."
-            source = variant.javaCompile.source
-            ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
-            classpath = files(variant.javaCompile.classpath.files) + files(ext.androidJar)
-//        options.links("http://docs.oracle.com/javase/7/docs/api/");
-//        options.links("http://d.android.com/reference/");
-            exclude '**/BuildConfig.java'
-            exclude '**/R.java'
-        }
-    }
-
-    apply plugin: 'maven'
-
-    uploadArchives {
-        repositories.mavenDeployer {
-            pom.groupId = PUBLISH_GROUP_ID
-            pom.artifactId = PUBLISH_ARTIFACT_ID
-            pom.version = PUBLISH_VERSION
-
-            repository(url: LOCAL_REPO)
-        }
-    }
-}
 repositories {
     mavenCentral()
 }

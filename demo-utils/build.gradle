@@ -4,13 +4,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.commonsware.cwac.richtextutils.demo"
         minSdkVersion 13
-        targetSdkVersion 21
+        targetSdk 33
         versionCode 1
         versionName "1.0"
     }
@@ -26,6 +25,7 @@ android {
             assets.srcDirs = ['../testAssets']
         }
     }
+    namespace 'com.commonsware.cwac.richtextutils.demo'
 }
 
 repositories {
@@ -35,8 +35,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.android.support:support-v13:21.0.3'
-    compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
-    debugCompile project(':richedit')
-    releaseCompile 'com.commonsware.cwac:richedit:0.5.3'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.astuetz:pagerslidingtabstrip:1.0.1'
+    implementation project(':richedit')
 }
