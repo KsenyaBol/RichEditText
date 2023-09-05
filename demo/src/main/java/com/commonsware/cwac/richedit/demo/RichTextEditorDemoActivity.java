@@ -17,11 +17,9 @@ package com.commonsware.cwac.richedit.demo;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Selection;
 import android.view.*;
 import android.widget.Button;
 
-import com.commonsware.cwac.colormixer.ColorMixerActivity;
 import com.commonsware.cwac.richedit.*;
 
 import java.util.List;
@@ -38,7 +36,6 @@ public class RichTextEditorDemoActivity extends Activity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         setContentView(R.layout.main);
 
         editor = findViewById(R.id.editor);
@@ -109,16 +106,6 @@ public class RichTextEditorDemoActivity extends Activity
 
     @Override
     public boolean pick(ColorPickerOperation op) {
-        Intent i = new Intent(this, ColorMixerActivity.class);
-
-        i.putExtra(ColorMixerActivity.TITLE, "Pick a Color");
-
-        if (op.hasColor()) {
-            i.putExtra(ColorMixerActivity.COLOR, op.getColor());
-        }
-
-        this.colorPickerOp = op;
-        startActivityForResult(i, COLOR_REQUEST);
 
         return (true);
     }
@@ -130,7 +117,6 @@ public class RichTextEditorDemoActivity extends Activity
 
         if (colorPickerOp != null && requestCode == COLOR_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
-                color = result.getIntExtra(ColorMixerActivity.COLOR, 0);
             }
 
             if (color == 0) {

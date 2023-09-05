@@ -9,6 +9,8 @@ android {
     compileSdk 33
 
     defaultConfig {
+        minSdk 21
+        targetSdk 33
         testApplicationId "com.commonsware.cwac.richedit.test"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

@@ -1,1 +1,1 @@
-include ':richedit', ':demo', ':demo-utils'
+include ':richedit', ':demo'
