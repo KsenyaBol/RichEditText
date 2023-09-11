@@ -10,6 +10,7 @@ android {
 
     defaultConfig {
         minSdk 21
+        //noinspection OldTargetApi
         targetSdk 33
         testApplicationId "com.commonsware.cwac.richedit.test"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -36,6 +37,20 @@ android {
 
     namespace 'com.commonsware.cwac.richedit'
 }
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId 'com.github.Omega-R'
+            artifactId = "RichEditText"
+            version = "1.0"
+            afterEvaluate {
+                from components.release
+            }
+        }
+    }
+}
+
 
 dependencies {
 

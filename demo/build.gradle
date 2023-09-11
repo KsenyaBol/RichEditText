@@ -13,6 +13,7 @@ android {
     defaultConfig {
         applicationId 'com.commonsware.cwac.richedit.demo'
         minSdk 21
+        //noinspection OldTargetApi
         targetSdk 33
     }
 }
